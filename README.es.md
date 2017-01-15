@@ -168,3 +168,47 @@ De esta manera, nuestro método `LoadAvg::new` queda:
             last15: load_averages[2]
         }
     }
+
+### Implementación del API
+
+Hasta este punto, no hemos utilizado nada que tenga que ver con Rocket. Pero espera solo un poco, eso está a punto de cambiar.
+
+#### /loadavg
+
+De acuerdo con la especificación inicial, necesitamos un endpoint `/loadavg` que atenderá solicitudes `GET` y devolverá los promedios de carga en forma de JSON. Para cumplir con este fin, Rocket asocia una ruta y un conjunto de condiciones de validación con una función que manejará los datos de entrada y generará una respuesta, o *handler*. Las validaciones se expresan a través de un *atributo* de la función que indica qué método, parámetros y restricciones tiene un endpoint específico. De esta manera, el deber principal de nuestro *handler* para el endpoint `/loadavg` será crear una nueva instancia de `LoadAvg` y devolver su valor como JSON.
+
+En primer lugar, añadimos las referencias necesarias a nuestro archivo `src/main.rs` para utilizar las herramientas de Rocket. Al comienzo del archivo, añadimos algunas directivas para indicarle al compilador que utilice las características de generación de código así como la referencia al *crate* de Rocket.
+
+    #![feature(plugin)]
+    #![plugin(rocket_codegen)]
+
+    extern crate rocket;
+
+A continuación, vamos a implementar el *handler* para el endpoint `/loadavg`.
+
+    #[get("/loadavg")]
+    fn loadavg() -> String {
+        format!("{:?}", LoadAvg::new())
+    }
+
+La definición del handler contempla entonces un *atributo* que define el método, ruta y parámetros de un endpoint. En este caso `#[get("/loadavg")]` indica que el endpoint `/loadavg` responderá a solicitudes `GET` y que no toma ningún parámetro.
+
+Seguido, se define la *función* que manejará las solicitudes que coincidan con las condiciones definidas por el atributo. Esta función también tiene un tipo de datos de retorno, el cual debe implementar el _trait_ *Responder*, que no es más que una manera de indicar que el tipo de datos puede ser transformado en una respuesta HTTP.
+
+En este caso, se utiliza inicialmente el tipo de datos `String`. Rocket implementa el trait `Responder` por defecto para una buena cantidad de tipos de datos estándar de Rust, por lo que no es necesario que implementemos nada adicional.
+
+#### Montaje del endpoint /loadavg
+
+Para que el endpoint esté disponible para los clientes, el mismo debe _montarse_ al momento de iniciar la aplicación. Para este fin, el servidor Web de Rocket debe arrancar en la función `main` de nuestro proyecto. Después de _encender_, la función `mount` nos permite pasar un conjunto de rutas a _montar_ con un prefijo específico generadas por la macro `routes`. Una vez se han montado las rutas, es posible _lanzar_ el _cohete_.
+
+    fn main() {
+        rocket::ignite()
+            .mount("/", routes![loadavg])
+            .launch();
+    }
+    
+En este punto ya podemos correr nuestra API usando `cargo run`:
+
+    🚀  Rocket has launched from http://localhost:8000...
+
+Sin embargo, al consultar el endpoint en `http://localhost:8000/loadavg`, podremos observar que la respuesta aún no está presentada en JSON, sino como una representación del tipo `LoadAvg` como cadena de caracteres. Esto es debido al tipo de retorno de nuestro handler, y está a punto de cambiar.

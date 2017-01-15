@@ -1,4 +1,8 @@
+#![feature(plugin)]
+#![plugin(rocket_codegen)]
+
 extern crate libc;
+extern crate rocket;
 
 use libc::{c_double, c_int};
 
@@ -31,8 +35,13 @@ impl LoadAvg {
     }
 }
 
+#[get("/loadavg")]
+fn loadavg() -> String {
+    format!("{:?}", LoadAvg::new())
+}
 
 fn main() {
-    let load_avg = LoadAvg::new();
-    println!("{:?}", load_avg);
+    rocket::ignite()
+        .mount("/", routes![loadavg])
+        .launch();
 }
