@@ -4,5 +4,6 @@ version = "0.1.0"
 authors = ["Sebastián Magrí <sebasmagri@gmail.com>"]
 
 [dependencies]
+libc = "*"
 rocket = "0.1.5"
 rocket_codegen = "0.1.5"

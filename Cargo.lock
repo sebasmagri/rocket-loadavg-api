@@ -2,6 +2,7 @@
 name = "loadavg-api"
 version = "0.1.0"
 dependencies = [
+ "libc 0.2.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "rocket_codegen 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)",
 ]

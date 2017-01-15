@@ -1,11 +1,38 @@
+extern crate libc;
+
+use libc::{c_double, c_int};
 
 
+#[derive(Debug)]
 struct LoadAvg {
-    last: f32,
-    last5: f32,
-    last15: f32
+    last: f64,
+    last5: f64,
+    last15: f64
 }
 
+extern {
+    fn getloadavg(load_avg: *mut c_double, load_avg_len: c_int);
+}
+
+
+impl LoadAvg {
+    fn new() -> LoadAvg {
+        let load_averages: [f64; 3] = unsafe {
+            let mut lavgs: [c_double; 3] = [0f64, 0f64, 0f64];
+            getloadavg(lavgs.as_mut_ptr(), 3);
+            lavgs
+        };
+
+        LoadAvg {
+            last: load_averages[0],
+            last5: load_averages[1],
+            last15: load_averages[2]
+        }
+    }
+}
+
+
 fn main() {
-    println!("Hello, world!");
+    let load_avg = LoadAvg::new();
+    println!("{:?}", load_avg);
 }
