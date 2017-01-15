@@ -1,5 +1,5 @@
 [package]
-name = "loadavg-api"
+name = "rocket-loadavg-api"
 version = "0.1.0"
 authors = ["Sebastián Magrí <sebasmagri@gmail.com>"]
 
@@ -7,3 +7,7 @@ authors = ["Sebastián Magrí <sebasmagri@gmail.com>"]
 libc = "*"
 rocket = "0.1.5"
 rocket_codegen = "0.1.5"
+rocket_contrib = { version = "0.1.5", features = ["json"] }
+serde = "*"
+serde_json = "*"
+serde_derive = "*"

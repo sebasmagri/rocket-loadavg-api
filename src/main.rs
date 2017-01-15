@@ -3,11 +3,15 @@
 
 extern crate libc;
 extern crate rocket;
+#[macro_use] extern crate rocket_contrib;
+#[macro_use] extern crate serde_derive;
+extern crate serde_json;
 
 use libc::{c_double, c_int};
 
+use rocket_contrib::JSON;
 
-#[derive(Debug)]
+#[derive(Serialize)]
 struct LoadAvg {
     last: f64,
     last5: f64,
@@ -36,8 +40,8 @@ impl LoadAvg {
 }
 
 #[get("/loadavg")]
-fn loadavg() -> String {
-    format!("{:?}", LoadAvg::new())
+fn loadavg() -> JSON<LoadAvg> {
+    JSON(LoadAvg::new())
 }
 
 fn main() {

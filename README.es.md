@@ -211,4 +211,51 @@ En este punto ya podemos correr nuestra API usando `cargo run`:
 
     🚀  Rocket has launched from http://localhost:8000...
 
-Sin embargo, al consultar el endpoint en `http://localhost:8000/loadavg`, podremos observar que la respuesta aún no está presentada en JSON, sino como una representación del tipo `LoadAvg` como cadena de caracteres. Esto es debido al tipo de retorno de nuestro handler, y está a punto de cambiar.
+Sin embargo, al consultar el endpoint en `http://localhost:8000/loadavg`, podremos observar que la respuesta aún no está en JSON, sino como una representación del tipo `LoadAvg` como cadena de caracteres. Esto es debido al tipo de retorno de nuestro handler, y está a punto de cambiar.
+
+#### Serialización de la respuesta como JSON
+
+Por último, necesitamos formatear el cuerpo de la respuesta como JSON, y establecer las entradas adecuadas para indicarle a los clientes sobre este formato en las cabeceras de la misma. Aunque parezca algo complicado, Rocket ofrece herramientas para que esta tarea sea sumamente sencilla en su módulo _contrib_. Específicamente, el tipo de datos `rocket_contrib::JSON` nos permite _envolver_ un tipo de datos serializable y hacerlo directamente el valor de retorno del handler, manejando todos los detalles de conversión e información adicional en la respuesta HTTP.
+
+Como el tipo `JSON` en Rocket hace su trabajo sobre la base del _crate_ `serde`, posiblemente el más usado para fines de _serialización_ y _deserialización_ en Rust, primero debemos añadir algunas nuevas dependencias a nuestro `Cargo.toml` de manera que la sección `[dependencies]` quede de la siguiente forma:
+
+    [dependencies]
+    libc = "*"
+    rocket = "0.1.5"
+    rocket_codegen = "0.1.5"
+    rocket_contrib = { version = "0.1.5", features = ["json"] }
+    serde = "*"
+    serde_json = "*"
+    serde_derive = "*"
+
+Igualmente, debemos añadir las referencias a estos nuevos _crates_ en nuestro `src/main.rs`:
+
+    extern crate serde_json;
+    #[macro_use] extern crate rocket_contrib;
+    #[macro_use] extern crate serde_derive;
+    
+    use rocket_contrib::JSON;
+
+En este punto, solo debemos asegurarnos de que nuestro tipo de datos de respuesta pueda ser correctamente serializado como `JSON`. Dado que `LoadAvg` es un tipo de datos simple, y que todos sus campos pueden ser convertidos fácilmente a su representación en `JSON`, podemos hacer uso del atributo `[derive()]` para implementar automáticamente el _trait_ o interfaz `Serialize` proveniente de `serde`. De tal manera que nuestro tipo de datos queda así:
+
+    #[derive(Serialize)]
+    struct LoadAvg {
+        last: f64,
+        last5: f64,
+        last15: f64
+    }
+
+Como se puede observar, se ha removido también el trait `Debug`, debido a que ya no se utilizará.
+
+Al garantizar que nuestro tipo de datos se puede expresar correctamente como `JSON`, podemos refactorizar el handler `loadavg` para utilizar el tipo de datos `rocket_contrib::JSON`, quedando de la siguiente manera:
+
+    #[get("/loadavg")]
+    fn loadavg() -> JSON<LoadAvg> {
+        JSON(LoadAvg::new())
+    }
+
+## Referencias finales
+
+* https://doc.rust-lang.org/stable/book/
+* https://rocket.rs/guide/requests/#json
+* https://github.com/SergioBenitez/Rocket/blob/master/examples/json/
