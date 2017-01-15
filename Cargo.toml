@@ -1,0 +1,8 @@
+[package]
+name = "loadavg-api"
+version = "0.1.0"
+authors = ["Sebastián Magrí <sebasmagri@gmail.com>"]
+
+[dependencies]
+rocket = "0.1.5"
+rocket_codegen = "0.1.5"
