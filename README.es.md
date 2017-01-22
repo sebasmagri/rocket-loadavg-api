@@ -2,7 +2,7 @@
 
 La intención de este proyecto es mostrar los fundamentos para la implementación de un API REST en el lenguaje de programación Rust, haciendo uso del Framework Web Rocket, así como resaltar algunos detalles en el camino.
 
-Este proyecto es ofrecido como taller asociado a una [presentación introductoria](http://slides.com/sebasmagri/construyendo-servicios-web-de-alto-rendimiento-con-rust-y-rocket). Sin embargo, en este documento se describe a mayor detalle su implementación.
+Este proyecto es ofrecido como taller asociado a una [introducción al desarrollo de APIs](http://slides.com/sebasmagri/construyendo-servicios-web-de-alto-rendimiento-con-rust-y-rocket). Sin embargo, en este documento se describe a mayor detalle su implementación.
 
 ## Objetivos
 
@@ -28,7 +28,7 @@ Este método funciona para ambientes UNIX, si estás trabajando en Windows puede
 
 `rustup` instala por defecto el toolchain estable de Rust. Por esta razón debemos instalar luego el toolchain *Nightly* con:
 
-    $ rustup install nightly
+    $ rustup install nightly-2017-01-21
 
 Si tu aplicación en Rocket deja de funcionar después de actualizar las dependencias, es muy probable que necesites actualizar también el toolchain:
 
@@ -42,6 +42,10 @@ Para generar la estructura inicial de nuestra aplicación ejecutamos:
 
     $ cargo new loadavg-api --bin
     $ cd loadavg-api/
+
+Ahora nos aseguramos de utilizar la versión nightly del compilador en nuestro proyecto
+
+    $ rustup override set nightly-2017-01-21
 
 ## Instalación de Rocket
 
