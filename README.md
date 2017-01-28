@@ -262,4 +262,4 @@ Finally, we can run the application again using `cargo run` and check how the re
 
 * https://doc.rust-lang.org/stable/book/
 * https://rocket.rs/guide/requests/#json
-* https://github.com/SergioBenitez/Rocket/blob/master/examples/json/
+* https://github.com/SergioBenitez/Rocket/tree/v0.1.6/examples/json
