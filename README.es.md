@@ -24,11 +24,11 @@ Rocket *aún* requiere el uso de la versión *nightly* o de desarrollo del compi
 
     $ curl https://sh.rustup.rs -sSf | sh
 
-Este método funciona para ambientes UNIX, si estás trabajando en Windows puedes usar [otros métodos de instalación](https://github.com/rust-lang-nursery/rustup.rs/#other-installation-methods).
+Este método funciona para ambientes UNIX. Si estás trabajando en Windows puedes usar [otros métodos de instalación](https://github.com/rust-lang-nursery/rustup.rs/#other-installation-methods).
 
 `rustup` instala por defecto el toolchain estable de Rust. Por esta razón debemos instalar luego el toolchain *Nightly* con:
 
-    $ rustup install nightly-2017-01-21
+    $ rustup install nightly-2017-01-25
 
 Si tu aplicación en Rocket deja de funcionar después de actualizar las dependencias, es muy probable que necesites actualizar también el toolchain:
 
@@ -45,13 +45,13 @@ Para generar la estructura inicial de nuestra aplicación ejecutamos:
 
 Ahora nos aseguramos de utilizar la versión nightly del compilador en nuestro proyecto
 
-    $ rustup override set nightly-2017-01-21
+    $ rustup override set nightly-2017-01-25
 
 ## Instalación de Rocket
 
 Ahora que tenemos la estructura inicial de nuestro proyecto, añadimos a *Rocket* a las dependencias del mismo. Como se mencionó anteriormente, `cargo` es utilizado para gestionar las dependencias, y esto lo hace a través del archivo `Cargo.toml` que se encuentra en la raíz del proyecto.
 
-Dentro del archivo `Cargo.toml`, usamos la sección `[dependencies]` para definir qué *crates* utilizará nuestro proyecto. Por defecto, estos *crates* son descargados desde el repositorio central comunitario en [crates.io](https://crates.io/). Así, añadimos `rocket` y `rocket_codegen`. Este último incluye herramientas de generación automática de código que nos va a ahorrar una gran cantidad de trabajo al implementar nuestra API.
+Dentro del archivo `Cargo.toml`, usamos la sección `[dependencies]` para definir qué *crates* utilizará nuestro proyecto. Por defecto, estos crates son descargados desde el repositorio central comunitario en [crates.io](https://crates.io/). Así, añadimos `rocket` y `rocket_codegen`. Este último incluye herramientas de generación automática de código que nos va a ahorrar una gran cantidad de trabajo al implementar nuestra API.
 
     [dependencies]
     rocket = "0.1.6"
@@ -80,7 +80,7 @@ Rust permite definir datos tipados con características arbitrarias a través de
 
 Estamos creando una estructura `LoadAvg` con 3 *campos*, cada uno de los cuales tiene tipo `f64`, que maneja números flotantes de 64 bits. Esta estructura es en si un nuevo tipo de datos que abstrae la carga promedio del sistema. Si observamos la especificación de la respuesta que esperan nuestros clientes, podemos darnos cuenta de que el tipo de datos `LoadAvg` es muy similar.
 
-Antes de la definición de nuestro `LoadAvg`, podemos encontrar `#[derive(Debug)]`. Ésta es la manera como Rust implementa un `trait`, que describe ciertos comportamientos de un tipo de datos. En este caso específico, y con fines de depuración, solo estamos indicando que queremos que nuestro tipo de datos se pueda imprimir usando el indicador de formato `{:?}`, que genera una representación del dato con detalles de sus campos. Así podemos hacer:
+Antes de la definición de nuestro `LoadAvg`, podemos encontrar `#[derive(Debug)]`. Ésta es una manera como Rust implementa un `trait`, que describe ciertos comportamientos de un tipo de datos. En este caso específico, y con fines de depuración, solo estamos indicando que queremos que nuestro tipo de datos se pueda imprimir usando el indicador de formato `{:?}`, que genera una representación del dato con detalles de sus campos. Así podemos hacer:
 
     println!("{:?}", load_avg);
 
@@ -132,7 +132,7 @@ Después de tener `libc` en las dependencias del proyecto, podemos hacer referen
 
 Esto nos permite utilizar cualquiera de las funciones definidas en el crate [libc](https://doc.rust-lang.org/libc/x86_64-unknown-linux-gnu/libc/) en nuestros proyectos.
 
-Si observamos la [firma de esta función en C](https://linux.die.net/man/3/getloadavg), podemos darnos cuenta de que el primer parámetro es un puntero a un arreglo de valores `double` y el segundo un valor `int`:
+Si observamos la [firma de esta función en C](https://linux.die.net/man/3/getloadavg), podemos darnos cuenta de que el primer parámetro es un puntero a un arreglo de valores `double`, donde se almacenarán los valores de carga, y el segundo un valor `int`, para la longitud del arreglo anterior:
 
     # Esto es código C
     int getloadavg(double loadavg[], int nelem);
@@ -179,7 +179,11 @@ Hasta este punto, no hemos utilizado nada que tenga que ver con Rocket. Pero esp
 
 #### /loadavg
 
-De acuerdo con la especificación inicial, necesitamos un endpoint `/loadavg` que atenderá solicitudes `GET` y devolverá los promedios de carga en forma de JSON. Para cumplir con este fin, Rocket asocia una ruta y un conjunto de condiciones de validación con una función que manejará los datos de entrada y generará una respuesta, o *handler*. Las validaciones se expresan a través de un *atributo* de la función que indica qué método, parámetros y restricciones tiene un endpoint específico. De esta manera, el deber principal de nuestro *handler* para el endpoint `/loadavg` será crear una nueva instancia de `LoadAvg` y devolver su valor como JSON.
+De acuerdo con la especificación inicial, necesitamos un endpoint `/loadavg` que atenderá solicitudes `GET` y devolverá los promedios de carga en forma de JSON.
+
+Para este fin, Rocket asocia una ruta y un conjunto de condiciones de validación con una función que manejará los datos de entrada y generará una respuesta, o *handler*. Las validaciones se expresan a través de un *atributo* de la función que indica qué método, parámetros y restricciones tiene un endpoint específico.
+
+Teniendo esto en cuenta, el deber principal de nuestro *handler* para el endpoint `/loadavg` será crear una nueva instancia de `LoadAvg` y devolver su valor como JSON.
 
 En primer lugar, añadimos las referencias necesarias a nuestro archivo `src/main.rs` para utilizar las herramientas de Rocket. Al comienzo del archivo, añadimos algunas directivas para indicarle al compilador que utilice las características de generación de código así como la referencia al *crate* de Rocket.
 
@@ -203,7 +207,7 @@ En este caso, se utiliza inicialmente el tipo de datos `String`. Rocket implemen
 
 #### Montaje del endpoint /loadavg
 
-Para que el endpoint esté disponible para los clientes, el mismo debe _montarse_ al momento de iniciar la aplicación. Para este fin, el servidor Web de Rocket debe arrancar en la función `main` de nuestro proyecto. Después de _encender_, la función `mount` nos permite pasar un conjunto de rutas a _montar_ con un prefijo específico generadas por la macro `routes`. Una vez se han montado las rutas, es posible _lanzar_ el _cohete_.
+Para que el endpoint esté disponible para los clientes, el mismo debe _montarse_ al momento de iniciar la aplicación. Para este fin, el servidor Web de Rocket debe arrancar en la función `main` de nuestro proyecto. Esta es una secuencia divertida. Después de _encender_, la función `mount` nos permite pasar un conjunto de rutas a _montar_ con un prefijo específico generadas por la macro `routes`. Una vez se han montado las rutas, es posible _lanzar_ el _cohete_.
 
     fn main() {
         rocket::ignite()
@@ -257,6 +261,8 @@ Al garantizar que nuestro tipo de datos se puede expresar correctamente como `JS
     fn loadavg() -> JSON<LoadAvg> {
         JSON(LoadAvg::new())
     }
+
+Finalmente, podemos correr la aplicación de nuevo con `cargo run` y verificar que la respuesta del endpoint `/loadavg` está formateada de la manera esperada.
 
 ## Referencias finales
 
