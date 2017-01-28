@@ -51,11 +51,11 @@ Ahora nos aseguramos de utilizar la versión nightly del compilador en nuestro p
 
 Ahora que tenemos la estructura inicial de nuestro proyecto, añadimos a *Rocket* a las dependencias del mismo. Como se mencionó anteriormente, `cargo` es utilizado para gestionar las dependencias, y esto lo hace a través del archivo `Cargo.toml` que se encuentra en la raíz del proyecto.
 
-Dentro del archivo `Cargo.toml`, usamos la sección `[dependencies]` para definir qué *crates* utilizará nuestro proyecto. Por defecto, estos *crates* son descargados desde el repositorio central comunitario en [crates.io](https://crates.io/). Así, añadimos `rocket` y `rocket_codegen`, que incluye herramientas de generación automática de código que nos va a ahorrar una gran cantidad de trabajo al implementar nuestra API.
+Dentro del archivo `Cargo.toml`, usamos la sección `[dependencies]` para definir qué *crates* utilizará nuestro proyecto. Por defecto, estos *crates* son descargados desde el repositorio central comunitario en [crates.io](https://crates.io/). Así, añadimos `rocket` y `rocket_codegen`. Este último incluye herramientas de generación automática de código que nos va a ahorrar una gran cantidad de trabajo al implementar nuestra API.
 
     [dependencies]
-    rocket = "0.1.5"
-    rocket_codegen = "0.1.5"
+    rocket = "0.1.6"
+    rocket_codegen = "0.1.6"
 
 La próxima vez que se ejecute `cargo build` o `cargo run`, él mismo se encargará de encontrar, descargar y construir las dependencias del proyecto.
 
@@ -225,12 +225,12 @@ Como el tipo `JSON` en Rocket hace su trabajo sobre la base del _crate_ `serde`,
 
     [dependencies]
     libc = "*"
-    rocket = "0.1.5"
-    rocket_codegen = "0.1.5"
-    rocket_contrib = { version = "0.1.5", features = ["json"] }
-    serde = "*"
-    serde_json = "*"
-    serde_derive = "*"
+    rocket = "0.1.6"
+    rocket_codegen = "0.1.6"
+    rocket_contrib = { version = "0.1.6", features = ["json"] }
+    serde = "0.8"
+    serde_json = "0.8"
+    serde_derive = "0.8"
 
 Igualmente, debemos añadir las referencias a estos nuevos _crates_ en nuestro `src/main.rs`:
 
