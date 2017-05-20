@@ -30,7 +30,7 @@ This method _just works_ for  UNIX environments. If you're working on Windows yo
 
 By default, rustup installs the stable toolchain. Then, we need to install the nightly toolchain with:
 
-    $ rustup install nightly-2017-01-25
+    $ rustup install nightly-2017-05-18
 
 If your Rocket application stops working after an update, you should update your toolchain as well:
 
