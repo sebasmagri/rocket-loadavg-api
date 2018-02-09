@@ -1,4 +1,4 @@
-#![feature(plugin)]
+#![feature(plugin, decl_macro)]
 #![plugin(rocket_codegen)]
 
 extern crate libc;
@@ -9,7 +9,7 @@ extern crate serde_json;
 
 use libc::{c_double, c_int};
 
-use rocket_contrib::JSON;
+use rocket_contrib::Json;
 
 #[derive(Serialize)]
 struct LoadAvg {
@@ -40,8 +40,8 @@ impl LoadAvg {
 }
 
 #[get("/loadavg")]
-fn loadavg() -> JSON<LoadAvg> {
-    JSON(LoadAvg::new())
+fn loadavg() -> Json<LoadAvg> {
+    Json(LoadAvg::new())
 }
 
 fn main() {
